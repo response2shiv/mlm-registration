@@ -1,0 +1,95 @@
+<project name="Enrollment" default="build" basedir="./">
+    <property name="source" value="protected" />
+    <property environment="env" />
+
+    <property file="./build.properties" />
+    <target name="configure" unless="configure.done">
+        <copy file=".env.tpl" tofile=".env" overwrite="true">
+            <filterchain>
+                <replacetokens begintoken="##" endtoken="##">
+                    <token key="APP_NAME" value="${env.app_name}" />
+                    <token key="APP_ENV" value="${env.app_env}" />
+                    <token key="APP_DEBUG" value="${env.app_debug}" />
+                    <token key="APP_URL" value="${env.app_url}" />
+
+                    <!--new params-->
+                    <token key="APP_URL_SSL" value="${env.app_url_ssl}" />
+                    <token key="API_DEV" value="${env.api_dev}" />
+                    <token key="API_LIVE" value="${env.api_live}" />
+
+                    <token key="LOG_CHANNEL" value="${env.log_channel}" />
+                    <token key="FORCE_HTTPS" value="${env.force_https}" />
+
+                    <token key="DB_CONNECTION" value="${env.db_connection}" />
+                    <token key="DB_HOST" value="${env.db_host}" />
+                    <token key="DB_PORT" value="${env.db_port}" />
+                    <token key="DB_DATABASE" value="${env.db_database}" />
+                    <token key="DB_USERNAME" value="${env.db_username}" />
+                    <token key="DB_PASSWORD" value="${env.db_password}" />
+
+                    <token key="BROADCAST_DRIVER" value="${env.broadcast_driver}" />
+                    <token key="CACHE_DRIVER" value="${env.cache_driver}" />
+                    <token key="SESSION_DRIVER" value="${env.session_driver}" />
+                    <token key="SESSION_LIFETIME" value="${env.session_lifetime}" />
+                    <token key="QUEUE_CONNECTION" value="${env.queue_connection}" />
+
+                    <token key="REDIS_HOST" value="${env.redis_host}" />
+                    <token key="REDIS_PASSWORD" value="${env.redis_password}" />
+                    <token key="REDIS_PORT" value="${env.redis_port}" />
+
+                    <token key="MAIL_DRIVER" value="${env.mail_driver}" />
+                    <token key="MAIL_HOST" value="${env.mail_host}" />
+                    <token key="MAIL_PORT" value="${env.mail_port}" />
+                    <token key="MAIL_USERNAME" value="${env.mail_username}" />
+                    <token key="MAIL_PASSWORD" value="${env.mail_password}" />
+                    <token key="MAIL_ENCRYPTION" value="${env.mail_encryption}" />
+
+                    <token key="PUSHER_APP_ID" value="${env.pusher_app_id}" />
+                    <token key="PUSHER_APP_KEY" value="${env.pusher_app_key}" />
+                    <token key="PUSHER_APP_SECRET" value="${env.pusher_app_secret}" />
+                    <token key="PUSHER_APP_CLUSTER" value="${env.pusher_app_cluster}" />
+
+                    <token key="MIX_PUSHER_APP_KEY" value="${env.pusher_app_key}" />
+                    <token key="MIX_PUSHER_APP_CLUSTER" value="${env.pusher_app_cluster}" />
+
+                    <!--new params-->
+                    <token key="MAILCHIMP_APIKEY" value="${env.mailchimp_apikey}" />
+                    <token key="MAILCHIMP_LIST_ID" value="${env.mailchimp_list_id}" />
+                    <token key="TMT_URL" value="${env.tmt_url}" />
+                    <token key="TMT_USERNAME" value="${env.tmt_username}" />
+                    <token key="TMT_PASSWORD" value="${env.tmt_password}" />
+                    <token key="TMT_CHANNEL_ID" value="${env.tmt_channel_id}" />
+                    <token key="TMT_BOOKING_REFERENCE" value="${env.tmt_booking_reference}" />
+
+                    <token key="PAYAP_SUBDOMAIN" value="${env.payap_subdomain}" />
+                    <token key="PAYAP_URL" value="${env.payap_url}" />
+                    <token key="ROOT_DOMAIN" value="${env.root_domain}" />
+                    <token key="WP_HOME_URL" value="${env.wp_home_url}" />
+
+                </replacetokens>
+            </filterchain>
+        </copy>
+
+        <property name="configure.done" value="true"/>
+    </target>
+
+    <target name="composer" unless="composer.done">
+        <exec command="composer install" />
+
+        <property name="composer.done" value="true" />
+    </target>
+
+    <target name="npm">
+        <exec command="npm install" checkreturn="true" />
+    </target>
+
+    <target name="migrate">
+        <exec command="php artisan migrate" checkreturn="true" />
+    </target>
+
+    <target name="generateKey">
+        <exec command="php artisan key:generate" checkreturn="true" />
+    </target>
+
+    <target name="build" depends="composer, generateKey, npm, migrate" />
+</project>

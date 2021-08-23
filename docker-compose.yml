@@ -1,0 +1,53 @@
+# v3 syntax
+version: "3"
+
+# Named volumes
+volumes:
+  # MySQL Data
+  joinb-mysql-data:
+    driver: local
+
+services:
+  # MySQL (5.7)
+  mysql:
+    image: mysql:5.7
+    container_name: joinb-mysql
+    volumes:
+      - joinb-mysql-data:/var/lib/mysql
+    ports:
+      - "3305:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=joinb
+      - MYSQL_DATABASE=joinb
+      - MYSQL_USER=joinb
+      - MYSQL_PASSWORD=joinb
+      - UPLOAD_LIMIT=64M
+
+  # PHP (with Nginx)
+  app:
+    image: ambientum/php:7.2-nginx
+    container_name: joinb-app
+    depends_on:
+      - mysql
+    volumes:
+      - .:/var/www/app
+    ports:
+      - "8000:8080"
+    links:
+      - mysql
+  # phpmyadmin
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: joinb-phpmyadmin
+    depends_on:
+      - mysql
+    links:
+      - mysql
+    ports:
+      - "8182:80"
+    environment:
+      - PMA_HOST=mysql
+      - MYSQL_ROOT_PASSWORD=joinb
+      - MYSQL_USER=joinb
+      - MYSQL_PASSWORD=joinb
+      - UPLOAD_LIMIT=64M
